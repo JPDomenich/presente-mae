@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Presente para a Mamãe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+      color: white;
+      overflow: hidden;
+    }
+
+    #startScreen, #cameraScreen, #surpriseScreen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #startScreen {
+      display: flex;
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+    }
+
+    #startButton {
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background-color: white;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #startButton:hover {
+      transform: scale(1.05);
+      background-color: #eee;
+    }
+
+    #cameraScreen video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      z-index: 0;
+    }
+
+    #overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 2rem;
+    }
+
+    #surpriseScreen {
+      display: none;
+      flex-direction: column;
+      background: linear-gradient(to bottom right, #f8cdda, #1d2b64);
+      text-align: center;
+      padding: 20px;
+    }
+
+    #momImage {
+      max-width: 300px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px white;
+    }
+
+    #message {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tela inicial -->
+  <div id="startScreen">
+    <button id="startButton">Entrar com a facial</button>
+  </div>
+
+  <!-- Tela da câmera -->
+  <div id="cameraScreen">
+    <video id="video" autoplay playsinline></video>
+    <div id="overlay">
+      <p>Reconhecendo o rosto...</p>
+    </div>
+  </div>
+
+  <!-- Tela final surpresa -->
+  <div id="surpriseScreen">
+    <img id="momImage" src="sua-foto.jpg" alt="Mamãe linda 💖">
+    <div id="message">Te amo, mãe! Obrigado por tudo! 💐</div>
+    <audio id="bgMusic" autoplay loop>
+      <source src="sua-musica.mp3" type="audio/mpeg">
+      Seu navegador não suporta áudio.
+    </audio>
+  </div>
+
+  <script>
+    const startButton = document.getElementById("startButton");
+    const startScreen = document.getElementById("startScreen");
+    const cameraScreen = document.getElementById("cameraScreen");
+    const surpriseScreen = document.getElementById("surpriseScreen");
+    const video = document.getElementById("video");
+    const music = document.getElementById("bgMusic");
+
+    startButton.onclick = async () => {
+      startScreen.style.display = "none";
+      cameraScreen.style.display = "flex";
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" }, // câmera frontal
+          audio: false
+        });
+
+        video.srcObject = stream;
+
+        // Espera 5 segundos pra simular o reconhecimento facial
+        setTimeout(() => {
+          // Desliga a câmera
+          stream.getTracks().forEach(track => track.stop());
+          cameraScreen.style.display = "none";
+          surpriseScreen.style.display = "flex";
+          music.play();
+        }, 5000);
+
+      } catch (err) {
+        alert("Erro ao acessar a câmera: " + err.message);
+        startScreen.style.display = "flex";
+        cameraScreen.style.display = "none";
+      }
+    };
+  </script>
+
+</body>
+</html>
