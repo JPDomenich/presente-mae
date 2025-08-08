@@ -18,7 +18,7 @@
       overflow: hidden;
     }
 
-    #startScreen, #cameraScreen, #surpriseScreen {
+    .screen {
       position: absolute;
       top: 0; left: 0;
       width: 100%;
@@ -29,8 +29,11 @@
       flex-direction: column;
     }
 
-    #startScreen {
+    .screen.active {
       display: flex;
+    }
+
+    #startScreen {
       background: linear-gradient(135deg, #8e44ad, #3498db);
     }
 
@@ -50,44 +53,29 @@
       background-color: #eee;
     }
 
-    #cameraScreen video {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
-    }
-
     .overlay {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
+      position: relative;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: rgba(0,0,0,0.5);
-      backdrop-filter: blur(3px);
       flex-direction: column;
+      align-items: center;
     }
 
     .face-frame {
-  width: 350px;
-  height: 500px;
-  border: 6px solid white;
-  border-radius: 50% / 35%;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 30px 10px rgba(255,255,255,0.7);
-  animation: pulse 2s infinite;
-  background-color: black;
-}
+      width: 350px;
+      height: 500px;
+      border: 6px solid white;
+      border-radius: 50% / 35%;
+      overflow: hidden;
+      box-shadow: 0 0 30px 10px rgba(255,255,255,0.7);
+      animation: pulse 2s infinite;
+      background-color: black;
+    }
 
-.face-frame video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .face-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     @keyframes pulse {
       0% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.4); }
@@ -108,12 +96,13 @@
       to { opacity: 1; }
     }
 
+    /* Tela de homenagem */
     #surpriseScreen {
-      display: none;
-      flex-direction: column;
       background: linear-gradient(to bottom right, #f8cdda, #1d2b64);
       text-align: center;
       padding: 20px;
+      display: none;
+      flex-direction: column;
     }
 
     #momImage {
@@ -128,29 +117,51 @@
       margin-bottom: 20px;
       color: white;
     }
+
+    /* Transições */
+    .fade-out {
+      animation: fadeOut 1s forwards;
+    }
+
+    .fade-in {
+      animation: fadeInSurprise 1s forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeInSurprise {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- Tela inicial -->
-  <div id="startScreen">
+  <div id="startScreen" class="screen active">
     <button id="startButton">Entrar com a facial</button>
   </div>
 
   <!-- Tela de reconhecimento facial -->
- <!-- Tela de reconhecimento facial -->
-<div id="cameraScreen">
-  <div class="overlay">
-    <div class="face-frame">
-      <video id="video" autoplay playsinline></video>
+  <div id="cameraScreen" class="screen">
+    <div class="overlay">
+      <div class="face-frame">
+        <video id="video" autoplay playsinline></video>
+      </div>
+      <div class="welcome">Bem-vinda, Milaini! 💜</div>
     </div>
-    <div class="welcome">Bem-vinda, Milaini! 💜</div>
   </div>
-</div>
 
-
-  <!-- Tela final de homenagem -->
-  <div id="surpriseScreen">
+  <!-- Tela de homenagem -->
+  <div id="surpriseScreen" class="screen">
     <img id="momImage" src="sua-foto.jpg" alt="Mamãe linda 💖">
     <div id="message">Te amo, mãe! Obrigado por tudo! 💐</div>
     <audio id="bgMusic" autoplay loop>
@@ -167,9 +178,14 @@
     const video = document.getElementById("video");
     const music = document.getElementById("bgMusic");
 
+    // Função para mostrar apenas uma tela por vez
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
     startButton.onclick = async () => {
-      startScreen.style.display = "none";
-      cameraScreen.style.display = "flex";
+      showScreen("cameraScreen");
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -179,18 +195,26 @@
 
         video.srcObject = stream;
 
-        // Após 8 segundos, exibe a tela de homenagem
         setTimeout(() => {
+          // Desliga a câmera
           stream.getTracks().forEach(track => track.stop());
-          cameraScreen.style.display = "none";
-          surpriseScreen.style.display = "flex";
-          music.play();
-        }, 8000);
+
+          // Fade out da câmera
+          cameraScreen.classList.add("fade-out");
+
+          // Espera 1s para a transição terminar
+          setTimeout(() => {
+            cameraScreen.style.display = "none";
+            surpriseScreen.style.display = "flex";
+            surpriseScreen.classList.add("fade-in");
+            music.play();
+          }, 1000);
+
+        }, 8000); // 8 segundos de reconhecimento
 
       } catch (err) {
         alert("Erro ao acessar a câmera: " + err.message);
-        startScreen.style.display = "flex";
-        cameraScreen.style.display = "none";
+        showScreen("startScreen");
       }
     };
   </script>
