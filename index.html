@@ -10,8 +10,7 @@
       box-sizing: border-box;
     }
 
-    body, html {
-      width: 100%;
+    html, body {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
       background-color: #000;
@@ -20,11 +19,11 @@
     }
 
     #startScreen, #cameraScreen, #surpriseScreen {
-      display: none;
-      width: 100%;
-      height: 100%;
       position: absolute;
       top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
       justify-content: center;
       align-items: center;
       flex-direction: column;
@@ -52,25 +51,53 @@
     }
 
     #cameraScreen video {
+      position: absolute;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      position: absolute;
       z-index: 0;
     }
 
-    #overlay {
+    .overlay {
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px);
       z-index: 1;
       display: flex;
       justify-content: center;
       align-items: center;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(3px);
       flex-direction: column;
+    }
+
+    .face-frame {
+      width: 250px;
+      height: 350px;
+      border: 4px solid white;
+      border-radius: 50% / 40%;
+      position: relative;
+      box-shadow: 0 0 20px 5px rgba(255,255,255,0.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.4); }
+      50% { box-shadow: 0 0 30px 10px rgba(255,255,255,0.9); }
+      100% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.4); }
+    }
+
+    .welcome {
+      margin-top: 30px;
       font-size: 2rem;
+      font-weight: bold;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+      animation-delay: 5s;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
 
     #surpriseScreen {
@@ -102,15 +129,16 @@
     <button id="startButton">Entrar com a facial</button>
   </div>
 
-  <!-- Tela da câmera -->
+  <!-- Tela de reconhecimento facial -->
   <div id="cameraScreen">
     <video id="video" autoplay playsinline></video>
-    <div id="overlay">
-      <p>Reconhecendo o rosto...</p>
+    <div class="overlay">
+      <div class="face-frame"></div>
+      <div class="welcome">Bem-vinda, Milaini! 💜</div>
     </div>
   </div>
 
-  <!-- Tela final surpresa -->
+  <!-- Tela final de homenagem -->
   <div id="surpriseScreen">
     <img id="momImage" src="sua-foto.jpg" alt="Mamãe linda 💖">
     <div id="message">Te amo, mãe! Obrigado por tudo! 💐</div>
@@ -134,20 +162,19 @@
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" }, // câmera frontal
+          video: { facingMode: "user" },
           audio: false
         });
 
         video.srcObject = stream;
 
-        // Espera 5 segundos pra simular o reconhecimento facial
+        // Após 8 segundos, exibe a tela de homenagem
         setTimeout(() => {
-          // Desliga a câmera
           stream.getTracks().forEach(track => track.stop());
           cameraScreen.style.display = "none";
           surpriseScreen.style.display = "flex";
           music.play();
-        }, 5000);
+        }, 8000);
 
       } catch (err) {
         alert("Erro ao acessar a câmera: " + err.message);
