@@ -72,14 +72,22 @@
     }
 
     .face-frame {
-      width: 250px;
-      height: 350px;
-      border: 4px solid white;
-      border-radius: 50% / 40%;
-      position: relative;
-      box-shadow: 0 0 20px 5px rgba(255,255,255,0.7);
-      animation: pulse 2s infinite;
-    }
+  width: 350px;
+  height: 500px;
+  border: 6px solid white;
+  border-radius: 50% / 35%;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 30px 10px rgba(255,255,255,0.7);
+  animation: pulse 2s infinite;
+  background-color: black;
+}
+
+.face-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
     @keyframes pulse {
       0% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.4); }
@@ -130,13 +138,16 @@
   </div>
 
   <!-- Tela de reconhecimento facial -->
-  <div id="cameraScreen">
-    <video id="video" autoplay playsinline></video>
-    <div class="overlay">
-      <div class="face-frame"></div>
-      <div class="welcome">Bem-vinda, Milaini! 💜</div>
+ <!-- Tela de reconhecimento facial -->
+<div id="cameraScreen">
+  <div class="overlay">
+    <div class="face-frame">
+      <video id="video" autoplay playsinline></video>
     </div>
+    <div class="welcome">Bem-vinda, Milaini! 💜</div>
   </div>
+</div>
+
 
   <!-- Tela final de homenagem -->
   <div id="surpriseScreen">
