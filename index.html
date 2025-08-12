@@ -4,78 +4,31 @@
   <meta charset="UTF-8">
   <title>Presente para a Mamãe</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #000;
-      color: white;
-      overflow: hidden;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #000; color: white; overflow: hidden; }
 
     .screen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: none; justify-content: center; align-items: center; flex-direction: column;
     }
+    .screen.active { display: flex; }
 
-    .screen.active {
-      display: flex;
-    }
-
-    #startScreen {
-      background: linear-gradient(135deg, #8e44ad, #3498db);
-    }
-
+    #startScreen { background: linear-gradient(135deg, #8e44ad, #3498db); }
     #startButton {
-      padding: 20px 40px;
-      font-size: 1.5rem;
-      border: none;
-      border-radius: 10px;
-      background-color: white;
-      color: #333;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      padding: 20px 40px; font-size: 1.5rem; border: none; border-radius: 10px;
+      background-color: white; color: #333; cursor: pointer; transition: all 0.3s ease;
     }
+    #startButton:hover { transform: scale(1.05); background-color: #eee; }
 
-    #startButton:hover {
-      transform: scale(1.05);
-      background-color: #eee;
-    }
+    .overlay { position: relative; display: flex; flex-direction: column; align-items: center; }
 
-    .overlay {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
+    /* Moldura da câmera (maior) */
     .face-frame {
-      width: 350px;
-      height: 500px;
-      border: 6px solid white;
-      border-radius: 50% / 35%;
-      overflow: hidden;
-      box-shadow: 0 0 30px 10px rgba(255,255,255,0.7);
-      animation: pulse 2s infinite;
+      width: 450px; height: 650px; border: 8px solid white; border-radius: 50% / 35%;
+      overflow: hidden; box-shadow: 0 0 30px 10px rgba(255,255,255,0.7); animation: pulse 2s infinite;
       background-color: black;
     }
-
-    .face-frame video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .face-frame video { width: 100%; height: 100%; object-fit: cover; }
 
     @keyframes pulse {
       0% { box-shadow: 0 0 20px 5px rgba(255,255,255,0.4); }
@@ -84,62 +37,105 @@
     }
 
     .welcome {
-      margin-top: 30px;
-      font-size: 2rem;
-      font-weight: bold;
-      opacity: 0;
-      animation: fadeIn 2s forwards;
-      animation-delay: 5s;
+      margin-top: 30px; font-size: 2rem; font-weight: bold; opacity: 0;
+      animation: fadeIn 2s forwards; animation-delay: 5s;
     }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { to { opacity: 1; } }
 
     /* Tela de homenagem */
     #surpriseScreen {
       background: linear-gradient(to bottom right, #f8cdda, #1d2b64);
-      text-align: center;
-      padding: 20px;
-      display: none;
-      flex-direction: column;
+      text-align: center; padding: 20px; display: none; flex-direction: column;
+      align-items: center; justify-content: center;
     }
 
+    /* Foto da mãe ajustada */
     #momImage {
-      max-width: 300px;
-      border-radius: 50%;
-      margin-bottom: 20px;
-      box-shadow: 0 0 20px white;
+      max-width: 350px; width: 90%; border-radius: 50%; margin-bottom: 25px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.9); object-fit: cover; aspect-ratio: 1/1;
+      border: 4px solid white;
     }
 
+    /* Texto mais legível */
     #message {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      color: white;
+      font-size: 1.3rem; max-width: 800px; line-height: 1.8; color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8); background: rgba(0,0,0,0.4);
+      padding: 20px; border-radius: 15px;
     }
 
     /* Transições */
-    .fade-out {
-      animation: fadeOut 1s forwards;
+    .fade-out { animation: fadeOut 1s forwards; }
+    .fade-in { animation: fadeInSurprise 1s forwards; }
+    @keyframes fadeOut { to { opacity: 0; } }
+    @keyframes fadeInSurprise { from { opacity: 0; } to { opacity: 1; } }
+
+    /* === PLAYER ESTILO SPOTIFY (fixo embaixo) === */
+    .music-player {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 18px; width: min(940px, 96%); background: rgba(25,25,25,0.98);
+      border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: flex; align-items: center; gap: 14px; padding: 10px 14px; z-index: 9999;
+      backdrop-filter: blur(8px);
     }
 
-    .fade-in {
-      animation: fadeInSurprise 1s forwards;
+    .mp-cover {
+      width: 56px; height: 56px; border-radius: 6px; overflow: hidden; flex-shrink: 0;
+      background: linear-gradient(135deg,#666,#333);
     }
+    .mp-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-      }
+    .mp-info {
+      display: flex; flex-direction: column; gap: 2px; min-width: 0;
     }
+    .mp-title { font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mp-artist { font-size: 0.82rem; color: #bdbdbd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    @keyframes fadeInSurprise {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    .mp-controls {
+      display: flex; align-items: center; gap: 12px; margin-left: 20px;
+    }
+    .btn {
+      width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%; cursor: pointer; border: none; background: transparent; color: #fff;
+    }
+    .btn.play {
+      width: 44px; height: 44px; border-radius: 50%; background: #1db954; display:flex;align-items:center;justify-content:center;
+      box-shadow: 0 6px 14px rgba(29,185,84,0.18);
+    }
+    .btn svg { width: 18px; height: 18px; pointer-events: none; }
+
+    .mp-progress {
+      flex: 1; display: flex; align-items: center; gap: 10px; margin: 0 14px;
+    }
+    .time { font-size: 0.78rem; color: #cfcfcf; width: 40px; text-align: center; flex-shrink:0; }
+    .progress-bar {
+      position: relative; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.12); cursor: pointer; flex: 1;
+      overflow: hidden;
+    }
+    .progress-fill {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #1db954; border-radius: 999px;
+    }
+    .progress-handle {
+      position: absolute; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px;
+      background: #fff; border-radius: 50%; left: 0%; box-shadow: 0 2px 6px rgba(0,0,0,0.4); display: none;
+    }
+    .progress-bar:hover .progress-handle { display: block; }
+
+    .mp-right { display:flex; align-items:center; gap:10px; margin-left:auto; min-width:160px; justify-content:flex-end; }
+    .icon-like { color: #bdbdbd; cursor:pointer; width:36px; height:36px; display:flex;align-items:center;justify-content:center; border-radius:6px; }
+    .icon-like.active { color: #1db954; }
+
+    .volume {
+      display:flex; align-items:center; gap:8px;
+    }
+    .volume input[type=range] { width: 90px; cursor: pointer; -webkit-appearance: none; background: transparent; }
+    .volume input[type=range]::-webkit-slider-runnable-track { height:6px; border-radius:6px; background: rgba(255,255,255,0.12); }
+    .volume input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#fff; margin-top:-3px; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+
+    /* small screens */
+    @media (max-width:680px) {
+      .mp-info { display:none; }
+      .mp-right { min-width: 0; gap:6px; }
+      .volume input[type=range] { width: 60px; }
     }
   </style>
 </head>
@@ -163,60 +159,233 @@
   <!-- Tela de homenagem -->
   <div id="surpriseScreen" class="screen">
     <img id="momImage" src="sua-foto.jpg" alt="Mamãe linda 💖">
-    <div id="message">Te amo, mãe! Obrigado por tudo! 💐</div>
-    <audio id="bgMusic" autoplay loop>
+    <div id="message">
+      Feliz aniversário Mãe! Infelizmente eu não tive muito tempo para fazer esse presente, então ficou pior que o do ano passado, mas fiz pra mostrar que vale
+      a pena me dedicar, você me mostrou isso. Muito obrigado por tudo, por acreditar até quando eu não acreditava. Muita coisa está fora do lugar, e vai continuar assim por um bom
+      tempo, mas um dia tudo vai se ajeitar, porque o bem não falha. Pela primeira vez, a gente passa o seu aniversário longe um do outro, mas não é a primeira vez que tem algum imprevisto no meio.
+      Eu só quero que você saiba que eu te amo, mil, 10 mil, 100 mil milhões 💐
+    </div>
+
+    <!-- áudio (controlado pelo player abaixo) -->
+    <audio id="bgMusic" loop>
       <source src="sua-musica.mp3" type="audio/mpeg">
       Seu navegador não suporta áudio.
     </audio>
   </div>
 
+  <!-- === PLAYER ESTILO SPOTIFY === -->
+  <div class="music-player" id="musicPlayer">
+    <div class="mp-cover"><img id="mpCover" src="capa-placeholder.jpg" alt="Capa"></div>
+
+    <div class="mp-info">
+      <div class="mp-title" id="mpTitle">Sua música especial</div>
+      <div class="mp-artist" id="mpArtist">Autor • 2025</div>
+    </div>
+
+    <div class="mp-controls">
+      <button class="btn" id="btnRepeat" title="Repetir (toggle)">
+        <!-- repeat icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 1l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11v-1a4 4 0 0 1 4-4h12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 23l-4-4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 13v1a4 4 0 0 1-4 4H5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <button class="btn" id="btnPlay" title="Play/Pause">
+        <!-- play icon -->
+        <svg id="iconPlay" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3v18l15-9L5 3z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="mp-progress">
+      <div class="time" id="currentTime">0:00</div>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-handle" id="progressHandle"></div>
+      </div>
+      <div class="time" id="duration">0:00</div>
+    </div>
+
+    <div class="mp-right">
+      <div class="icon-like" id="likeBtn" title="Curtir">
+        <!-- heart -->
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.97-9-8.11C-0.09 7.98 4.39 3 7.6 5.28 9.04 6.33 12 9 12 9s2.96-2.67 4.4-3.72C19.61 3 24.09 7.98 21 12.89 19 16.03 12 21 12 21z"/></svg>
+      </div>
+
+      <div class="volume">
+        <!-- volume icon -->
+        <svg id="volIcon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+        </svg>
+        <input type="range" id="volRange" min="0" max="1" step="0.01" value="0.8">
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Elements
     const startButton = document.getElementById("startButton");
-    const startScreen = document.getElementById("startScreen");
     const cameraScreen = document.getElementById("cameraScreen");
     const surpriseScreen = document.getElementById("surpriseScreen");
     const video = document.getElementById("video");
-    const music = document.getElementById("bgMusic");
 
-    // Função para mostrar apenas uma tela por vez
+    const audio = document.getElementById("bgMusic");
+    const btnPlay = document.getElementById("btnPlay");
+    const iconPlay = document.getElementById("iconPlay");
+    const progressBar = document.getElementById("progressBar");
+    const progressFill = document.getElementById("progressFill");
+    const progressHandle = document.getElementById("progressHandle");
+    const currentTimeEl = document.getElementById("currentTime");
+    const durationEl = document.getElementById("duration");
+    const volRange = document.getElementById("volRange");
+    const likeBtn = document.getElementById("likeBtn");
+    const btnRepeat = document.getElementById("btnRepeat");
+    const mpCover = document.getElementById("mpCover");
+    const mpTitle = document.getElementById("mpTitle");
+    const mpArtist = document.getElementById("mpArtist");
+
+    // initial metadata (you can change)
+    mpCover.src = "capa-placeholder.jpg"; // substitua pela capa real
+    mpTitle.textContent = "Sua música especial";
+    mpArtist.textContent = "Feita com amor";
+
+    // Show only one screen function (keeps previous behavior)
     function showScreen(screenId) {
       document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
       document.getElementById(screenId).classList.add('active');
     }
 
+    // Camera start flow (igual ao seu)
     startButton.onclick = async () => {
       showScreen("cameraScreen");
-
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
-          audio: false
-        });
-
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
         video.srcObject = stream;
 
         setTimeout(() => {
-          // Desliga a câmera
           stream.getTracks().forEach(track => track.stop());
-
-          // Fade out da câmera
           cameraScreen.classList.add("fade-out");
-
-          // Espera 1s para a transição terminar
           setTimeout(() => {
             cameraScreen.style.display = "none";
             surpriseScreen.style.display = "flex";
             surpriseScreen.classList.add("fade-in");
-            music.play();
+            // tenta tocar o áudio (pode bloquear se o navegador exigir interação - por isso player tem play)
+            audio.volume = parseFloat(volRange.value);
+            // não forçar play se for bloqueado, o usuário tem botão
+            audio.play().catch(()=>{});
           }, 1000);
-
-        }, 8000); // 8 segundos de reconhecimento
-
+        }, 8000);
       } catch (err) {
         alert("Erro ao acessar a câmera: " + err.message);
         showScreen("startScreen");
       }
     };
+
+    /* --- PLAYER LOGIC --- */
+    let isPlaying = false;
+    let isRepeat = false;
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    // Update play/pause UI
+    audio.addEventListener('play', () => {
+      isPlaying = true;
+      btnPlay.classList.add('play');
+      // change icon to pause
+      iconPlay.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+    });
+    audio.addEventListener('pause', () => {
+      isPlaying = false;
+      btnPlay.classList.remove('play');
+      // change icon to play
+      iconPlay.innerHTML = '<path d="M5 3v18l15-9L5 3z"/>';
+    });
+
+    btnPlay.addEventListener('click', togglePlay);
+
+    // Progress updates
+    function formatTime(sec){
+      sec = Math.floor(sec);
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}:${s.toString().padStart(2,'0')}`;
+    }
+
+    audio.addEventListener('loadedmetadata', () => {
+      durationEl.textContent = formatTime(audio.duration || 0);
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const pct = (audio.currentTime / (audio.duration || 1)) * 100;
+      progressFill.style.width = pct + '%';
+      progressHandle.style.left = pct + '%';
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    // Click/seek on progress bar
+    function seekTo(clientX) {
+      const rect = progressBar.getBoundingClientRect();
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const pct = x / rect.width;
+      audio.currentTime = pct * (audio.duration || 0);
+    }
+
+    progressBar.addEventListener('click', (e) => {
+      seekTo(e.clientX);
+    });
+
+    // Drag support
+    let dragging = false;
+    progressHandle.addEventListener('mousedown', (e) => { dragging = true; e.preventDefault(); });
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      seekTo(e.clientX);
+    });
+    window.addEventListener('mouseup', () => { dragging = false; });
+
+    // Volume control
+    volRange.addEventListener('input', (e) => {
+      audio.volume = parseFloat(e.target.value);
+      // update icon (simple)
+      document.getElementById('volIcon').style.opacity = audio.volume === 0 ? 0.5 : 1;
+    });
+
+    // Like button
+    likeBtn.addEventListener('click', () => {
+      likeBtn.classList.toggle('active');
+    });
+
+    // Repeat toggle (loop)
+    btnRepeat.addEventListener('click', () => {
+      isRepeat = !isRepeat;
+      audio.loop = isRepeat;
+      btnRepeat.style.opacity = isRepeat ? '1' : '0.7';
+      btnRepeat.style.color = isRepeat ? '#1db954' : '#fff';
+    });
+
+    // If audio ends and not loop, update UI
+    audio.addEventListener('ended', () => {
+      if (!audio.loop) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    });
+
+    // Try to sync initial UI state
+    volRange.dispatchEvent(new Event('input'));
+    // Note: autoplay might be blocked; user can press play in the player.
+
+    // optional: keyboard space toggles play when focus not in input
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
   </script>
 
 </body>
